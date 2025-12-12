@@ -7,12 +7,12 @@ class HTMLNode:
         self,
         tag: str | None = None,
         value: str | None = None,
-        children: List[HTMLNode | None] | None = None,
+        children: List[HTMLNode] | None = None,
         props: Dict[str, str] | None = None,
     ) -> None:
         self.tag: str | None = tag
         self.value: str | None = value
-        self.children: List[HTMLNode | None] | None = children
+        self.children: List[HTMLNode] | None = children
         self.props: Dict[str, str] | None = props
 
     def to_html(self) -> str:
