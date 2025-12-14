@@ -47,8 +47,6 @@ def split_nodes_image(old_nodes: List[TextNode]) -> List[TextNode]:
             continue
         for image in images:
             parts = txt.split(f"![{image[0]}]({image[1]})")
-            if len(parts) == 2 and parts[0] == parts[1] and parts[0] == "":
-                break
             if parts[0] != "":
                 new_nodes.append(TextNode(parts[0], this_type))
             new_nodes.append(TextNode(image[0], TextType.IMAGE, image[1]))
@@ -70,12 +68,21 @@ def split_nodes_link(old_nodes: List[TextNode]) -> List[TextNode]:
             continue
         for link in links:
             parts = txt.split(f"[{link[0]}]({link[1]})")
-            if len(parts) == 2 and parts[0] == parts[1] and parts[0] == "":
-                break
-            new_nodes.append(TextNode(parts[0], this_type))
+            if parts[0] != "":
+                new_nodes.append(TextNode(parts[0], this_type))
             new_nodes.append(TextNode(link[0], TextType.LINK, link[1]))
             txt = parts[1]
         if txt != "":
             new_nodes.append(TextNode(txt, this_type))
 
     return new_nodes
+
+
+def text_to_textnodes(text: str) -> list[TextNode]:
+    nodes: List[TextNode] = [TextNode(text, TextType.PLAIN)]
+    nodes = split_nodes_delimiter(nodes, "**", TextType.BOLD)
+    nodes = split_nodes_delimiter(nodes, "_", TextType.ITALIC)
+    nodes = split_nodes_delimiter(nodes, "`", TextType.CODE)
+    nodes = split_nodes_image(nodes)
+    nodes = split_nodes_link(nodes)
+    return nodes
