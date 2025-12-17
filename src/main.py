@@ -1,11 +1,12 @@
-from textnode import TextNode, TextType
-
-print("Hello WOrld")
+import logging
+from pathlib import Path
+from website_utils import copy_recursive
 
 
 def main():
-    node = TextNode("This is some anchor text", TextType.PLAIN, "https://www.boot.dev")
-    print(node)
+    logging.basicConfig(level=logging.INFO)
+    copy_recursive(Path("./static"), Path("./public"))
 
 
-main()
+if __name__ == "__main__":
+    main()
