@@ -47,7 +47,7 @@ def block_to_block_type(markdown) -> BlockType:
         return BlockType.HEADING
     elif search(r"`{3}([\s\S]*?)`{3}", markdown):
         return BlockType.CODE
-    elif all(fullmatch(r">\s?(.+)", line) for line in markdown.splitlines()):
+    elif all(fullmatch(r"\s{0,3}>\s?(.*)", line) for line in markdown.splitlines()):
         return BlockType.QUOTE
     elif all(fullmatch(r"-\s*(.+)", line) for line in markdown.splitlines()):
         return BlockType.UNORDERED_LIST
@@ -65,13 +65,13 @@ def html_node_regex_match(
     for line in text.splitlines():
         m = fullmatch(pattern, line)
         assert m is not None
-        inline_txt = m.group()
+        inline_txt = m.group(1)
         if subparent is not None:
             subparent_node = ParentNode(
                 subparent,
                 [
                     text_node_to_html_node(text_node)
-                    for text_node in text_to_textnodes(line)
+                    for text_node in text_to_textnodes(inline_txt)
                 ],
             )
             html_nodes.append(subparent_node)
@@ -91,7 +91,7 @@ def text_to_children(text: str) -> List[HTMLNode]:
             text = text.replace("\n", " ")
             return [text_node_to_html_node(node) for node in text_to_textnodes(text)]
         case BlockType.QUOTE:
-            return html_node_regex_match(r">\s?(.+)", text)
+            return html_node_regex_match(r"\s{0,3}>\s?(.*)", text)
         case BlockType.UNORDERED_LIST:
             return html_node_regex_match(r"-\s*(.+)", text, "ul")
         case BlockType.ORDERED_LIST:
@@ -109,7 +109,7 @@ def get_block_html_node(markdown_block: str) -> HTMLNode:
             m = fullmatch(r"^(#{1,6})\s+.*$", markdown_block)
             assert m is not None
 
-            hashes = m.group()
+            hashes = m.group(1)
             return ParentNode(f"h{len(hashes)}", text_to_children(markdown_block))
         case BlockType.CODE:
             m = fullmatch(r"`{3}[^\n]*\n([\s\S]*?)`{3}", markdown_block)

@@ -53,7 +53,7 @@ def text_node_to_html_node(text_node: TextNode) -> HTMLNode:
             "img",
             "",
             {
-                "href": text_node.url if text_node.url is not None else "",
+                "src": text_node.url if text_node.url is not None else "",
                 "alt": text_node.text,
             },
         )
