@@ -16,7 +16,7 @@ class HTMLNode:
         self.props: Dict[str, str] | None = props
 
     def to_html(self) -> str:
-        raise NotImplementedError("To be implemented soon")
+        raise NotImplementedError("To be impletemented by subclasses")
 
     def props_to_html(self) -> str:
         if not self.props:
