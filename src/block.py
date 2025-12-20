@@ -6,7 +6,7 @@ from htmlnode import HTMLNode
 from inline import text_to_textnodes
 from leafnode import LeafNode
 from parentnode import ParentNode
-from textnode import TextNode, text_node_to_html_node
+from textnode import TextNode, text_node_to_html_node, TextType
 
 
 class BlockType(Enum):
@@ -77,14 +77,16 @@ def parse_table_block(block: str) -> HTMLNode:
     data_lines = lines[2:]
 
     header_cells = split_table_row(header_line)
+    expected_cols = len(header_cells)
 
     th_children = []
     for cell in header_cells:
-
         inline_nodes = []
         for n in text_to_textnodes(cell):
             inline_nodes.append(text_node_to_html_node(n))
 
+        if not inline_nodes:
+            inline_nodes = [text_node_to_html_node(TextNode("", TextType.PLAIN))]
         th_children.append(ParentNode("th", inline_nodes))
 
     thead_tr = ParentNode("tr", th_children)
@@ -93,12 +95,18 @@ def parse_table_block(block: str) -> HTMLNode:
     tbody_rows = []
     for line in data_lines:
         cells = split_table_row(line)
+
+        while len(cells) < expected_cols:
+            cells.append("")
+
         td_children = []
         for cell in cells:
-
             inline_nodes = []
             for n in text_to_textnodes(cell):
                 inline_nodes.append(text_node_to_html_node(n))
+
+            if not inline_nodes:
+                inline_nodes = [text_node_to_html_node(TextNode("", TextType.PLAIN))]
 
             td_children.append(ParentNode("td", inline_nodes))
 
@@ -108,8 +116,7 @@ def parse_table_block(block: str) -> HTMLNode:
     if tbody_rows:
         children.append(ParentNode("tbody", tbody_rows))
 
-    table = ParentNode("table", children)
-    return table
+    return ParentNode("table", children)
 
 
 def block_to_block_type(markdown) -> BlockType:
