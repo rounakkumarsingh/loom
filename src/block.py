@@ -44,8 +44,10 @@ def is_ordered_list(block: str) -> bool:
 def split_table_row(line: str) -> List[str]:
     parts = [p.strip() for p in line.split("|")]
     # probably can be done in a cleaner way?
-    if parts and parts[0] == "": parts = parts[1:]
-    if parts and parts[-1] == "": parts = parts[:-1]
+    if parts and parts[0] == "":
+        parts = parts[1:]
+    if parts and parts[-1] == "":
+        parts = parts[:-1]
     return parts
 
 
@@ -55,9 +57,10 @@ def is_table(block: str) -> bool:
         return False
     header = lines[0]
     sep = lines[1]
-    
+
     sep_parts = split_table_row(sep)
-    if len(sep_parts) == 0: return False
+    if len(sep_parts) == 0:
+        return False
 
     for token in sep_parts:
         # something like --- with optional trailing colon
@@ -101,9 +104,11 @@ def parse_table_block(block: str) -> HTMLNode:
 
         tbody_rows.append(ParentNode("tr", td_children))
 
-    tbody = ParentNode("tbody", tbody_rows)
-    table = ParentNode("table", [thead, tbody])
+    children = [thead]
+    if tbody_rows:
+        children.append(ParentNode("tbody", tbody_rows))
 
+    table = ParentNode("table", children)
     return table
 
 
