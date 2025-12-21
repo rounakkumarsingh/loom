@@ -90,9 +90,10 @@ class TestTextNodeToHTML(unittest.TestCase):
         self.assertIsInstance(html_node, LeafNode)
         self.assertEqual(html_node.tag, "img")
         self.assertEqual(html_node.value, "")
+        # Images use 'src' attribute, not 'href'
         self.assertEqual(
             html_node.props,
-            {"href": "https://www.boot.dev/image.png", "alt": "alt text for image"},
+            {"src": "https://www.boot.dev/image.png", "alt": "alt text for image"},
         )
 
 
