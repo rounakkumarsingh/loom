@@ -74,20 +74,40 @@ def is_table(block: str) -> bool:
 def parse_table_block(block: str) -> HTMLNode:
     lines = [line for line in block.splitlines() if line.strip() != ""]
     header_line = lines[0]
+    sep_line = lines[1]
     data_lines = lines[2:]
 
     header_cells = split_table_row(header_line)
     expected_cols = len(header_cells)
 
+    sep_cells = split_table_row(sep_line)
+
+    alignments = []
+    for cell in sep_cells:
+        cell = cell.strip()
+        if cell.startswith(":") and cell.endswith(":"):
+            alignments.append("center")
+        elif cell.endswith(":"):
+            alignments.append("right")
+        elif cell.startswith(":"):
+            alignments.append("left")
+        else:
+            alignments.append("left")
+
     th_children = []
-    for cell in header_cells:
+    for i, cell in enumerate(header_cells):
         inline_nodes = []
         for n in text_to_textnodes(cell):
             inline_nodes.append(text_node_to_html_node(n))
 
         if not inline_nodes:
             inline_nodes = [text_node_to_html_node(TextNode("", TextType.PLAIN))]
-        th_children.append(ParentNode("th", inline_nodes))
+
+        th = ParentNode("th", inline_nodes)
+        if i < len(alignments):
+            if alignments[i] in ["center", "right"]:
+                th.props = {"align": alignments[i]}
+        th_children.append(th)
 
     thead_tr = ParentNode("tr", th_children)
     thead = ParentNode("thead", [thead_tr])
@@ -100,15 +120,18 @@ def parse_table_block(block: str) -> HTMLNode:
             cells.append("")
 
         td_children = []
-        for cell in cells:
+        for i, cell in enumerate(cells):
             inline_nodes = []
             for n in text_to_textnodes(cell):
                 inline_nodes.append(text_node_to_html_node(n))
 
             if not inline_nodes:
                 inline_nodes = [text_node_to_html_node(TextNode("", TextType.PLAIN))]
-
-            td_children.append(ParentNode("td", inline_nodes))
+            td = ParentNode("td", inline_nodes)
+            if i < len(alignments):
+                if alignments[i] in ["center", "right"]:
+                    td.props = {"align": alignments[i]}
+            td_children.append(td)
 
         tbody_rows.append(ParentNode("tr", td_children))
 
