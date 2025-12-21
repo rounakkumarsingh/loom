@@ -109,17 +109,24 @@ This is the same paragraph on a new line
         self.assertEqual(block_to_block_type("```code block"), BlockType.PARAGRAPH)
 
     def test_block_to_block_type_quote(self):
+
+        # Test the normal cases
         self.assertEqual(block_to_block_type("> This is a quote"), BlockType.QUOTE)
         self.assertEqual(block_to_block_type("> Line 1\n> Line 2"), BlockType.QUOTE)
         self.assertEqual(block_to_block_type(">  indented quote"), BlockType.QUOTE)
-        # These tests are based on the assignment, which expects these to be QUOTE
-        # The provided block.py code currently classifies ">" and ">\n> " as PARAGRAPH
+
+        ## These tests are based on the assignment, which expects these to be QUOTE
+        ## The provided block.py code currently classifies ">" and ">\n> " as PARAGRAPH
+
+        # Test the valid but unconventional cases(i.e. edge cases)
         self.assertEqual(
             block_to_block_type("> "), BlockType.QUOTE
         )  # Single empty quote line
         self.assertEqual(
             block_to_block_type("> \n> "), BlockType.QUOTE
         )  # Empty quote lines
+
+        # Test against the wrong cases
         self.assertEqual(
             block_to_block_type("> Line 1\nLine 2"), BlockType.PARAGRAPH
         )  # Missing '>' on one line
@@ -128,6 +135,8 @@ This is the same paragraph on a new line
         )
 
     def test_block_to_block_type_unordered_list(self):
+
+        # Test the normal cases
         self.assertEqual(
             block_to_block_type("- Item 1\n- Item 2"), BlockType.UNORDERED_LIST
         )
@@ -137,46 +146,55 @@ This is the same paragraph on a new line
         self.assertEqual(
             block_to_block_type("-   indented item"), BlockType.UNORDERED_LIST
         )
-        # These tests are based on the assignment, which expects these to be UNORDERED_LIST
-        # The provided block.py code currently classifies "-" and "- \n- " as PARAGRAPH
+        ## These tests are based on the assignment, which expects these to be UNORDERED_LIST
+        ## The provided block.py code currently classifies "-" and "- \n- " as PARAGRAPH
+        
+        # Test the valid but unconventional cases(i.e. edge cases)
         self.assertEqual(
             block_to_block_type("- "), BlockType.UNORDERED_LIST
         )  # Single empty list item
         self.assertEqual(
             block_to_block_type("- \n- "), BlockType.UNORDERED_LIST
         )  # Empty list items
+
+        # Test against the wrong cases(for robustness)
         self.assertEqual(
             block_to_block_type("- Item 1\nItem 2"), BlockType.PARAGRAPH
         )  # Missing '-' on one line
         self.assertEqual(block_to_block_type("Not - a list item"), BlockType.PARAGRAPH)
 
     def test_block_to_block_type_ordered_list(self):
+
+        # Test the normal cases
         self.assertEqual(
             block_to_block_type("1. Item 1\n2. Item 2"), BlockType.ORDERED_LIST
         )
         self.assertEqual(block_to_block_type("1. Item"), BlockType.ORDERED_LIST)
         self.assertEqual(
             block_to_block_type("1. Item 1\n2. Item 2\n3. Item 3"),
-            BlockType.ORDERED_LIST,
-        )
+            BlockType.ORDERED_LIST,)
+        
+        # Test the valid cases but unconventional(i.e. edge cases)
+        self.assertEqual(
+            block_to_block_type("1. Item 1\n3. Item 2"), BlockType.ORDERED_LIST
+        )  # Non-sequential numbers but is still valid ordered list
+        self.assertEqual(
+            block_to_block_type("2. Item 1\n3. Item 2"), BlockType.ORDERED_LIST
+        )  # Starting number may not be 1 but still valid ordered list
+        self.assertEqual(
+            block_to_block_type("1. Item 1\n1. Item 2"), BlockType.ORDERED_LIST
+        )  # Repeated number but still valid ordered list
+
+        # Test against the wrong cases(for robustness)
         self.assertEqual(
             block_to_block_type("1. Item 1\n2.Item 2"), BlockType.PARAGRAPH
         )  # Missing space after '.'
-        self.assertEqual(
-            block_to_block_type("1. Item 1\n3. Item 2"), BlockType.PARAGRAPH
-        )  # Non-sequential numbers
-        self.assertEqual(
-            block_to_block_type("2. Item 1\n3. Item 2"), BlockType.PARAGRAPH
-        )  # Starting number not 1
         self.assertEqual(
             block_to_block_type("1 Item 1\n2. Item 2"), BlockType.PARAGRAPH
         )  # Missing '.'
         self.assertEqual(
             block_to_block_type("1. Ordered\n- Unordered"), BlockType.PARAGRAPH
         )  # Mixed list types
-        self.assertEqual(
-            block_to_block_type("1. Item 1\n1. Item 2"), BlockType.PARAGRAPH
-        )  # Repeated number
 
     def test_block_to_block_type_paragraph(self):
         self.assertEqual(

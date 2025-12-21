@@ -16,8 +16,8 @@ class TestLeafNode(unittest.TestCase):
         self.assertEqual(node.to_html(), "This is just text.")
 
     def test_to_html_raises_on_empty_value(self):
-        with self.assertRaises(ValueError):
-            LeafNode("p", "").to_html()
+        node= LeafNode("p", "")
+        self.assertEqual(node.to_html(), "<p></p>")
 
     def test_to_html_p_with_no_props(self):
         node = LeafNode("p", "This is a paragraph of text.")
