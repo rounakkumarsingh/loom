@@ -20,6 +20,18 @@ class BlockType(Enum):
 
 
 def markdown_to_blocks(markdown: str) -> List[str]:
+    """
+    Split a Markdown document into trimmed block strings separated by blank lines.
+    
+    This function normalizes line endings (converts CRLF and CR to LF), splits the text on double newlines, trims surrounding whitespace from each block, and removes empty blocks.
+    
+    Parameters:
+        markdown (str): The Markdown source text.
+    
+    Returns:
+        List[str]: A list of non-empty, trimmed Markdown block strings.
+    """
+    markdown = markdown.replace("\r\n", "\n").replace("\r", "\n")
     blocks = markdown.split("\n\n")
     blocks = [block.strip() for block in blocks if block.strip()]
     return blocks
