@@ -49,6 +49,27 @@ This is the same paragraph on a new line
             ],
         )
 
+    def test_markdown_to_blocks_mixed_line_endings(self):
+        md = (
+            "This is **bolded** paragraph\r\n\r\n"
+            "This is another paragraph with _italic_ text and `code` here\n"
+            "This is the same paragraph on a new line\r\n\r\n"
+            "- This is a list\n"
+            "- with items\r\n"
+        )
+
+        blocks = markdown_to_blocks(md)
+
+        self.assertEqual(
+            blocks,
+            [
+                "This is **bolded** paragraph",
+                "This is another paragraph with _italic_ text and `code` here\n"
+                "This is the same paragraph on a new line",
+                "- This is a list\n- with items",
+            ],
+        )
+
     def test_single_block(self):
         md = "This is just one block."
         blocks = markdown_to_blocks(md)
