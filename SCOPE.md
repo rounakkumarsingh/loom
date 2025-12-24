@@ -15,74 +15,74 @@ Only features that are fully working and verified via rendered output are marked
 
 ### Headings
 - [x] ATX headings  
-  https://spec.commonmark.org/0.31.2/#atx-headings
+  [Spec] (https://spec.commonmark.org/0.31.2/#atx-headings)
 
 - [ ] Setext headings (not used in current content)
-  https://spec.commonmark.org/0.31.2/#setext-headings
+  [Spec] (https://spec.commonmark.org/0.31.2/#setext-headings)
 
 ### Paragraphs & Text
 - [x] Paragraphs  
-  https://spec.commonmark.org/0.31.2/#paragraphs
+  [Spec] (https://spec.commonmark.org/0.31.2/#paragraphs)
 
 - [x] Emphasis (italic)  
-  https://spec.commonmark.org/0.31.2/#emphasis-and-strong-emphasis
+  [Spec] (https://spec.commonmark.org/0.31.2/#emphasis-and-strong-emphasis)
 
 - [x] Strong emphasis (bold)  
-  https://spec.commonmark.org/0.31.2/#emphasis-and-strong-emphasis
+  [Spec] (https://spec.commonmark.org/0.31.2/#emphasis-and-strong-emphasis)
 
 ### Block Elements
 - [x] Blockquotes  
-  https://spec.commonmark.org/0.31.2/#block-quotes
+  [Spec] (https://spec.commonmark.org/0.31.2/#block-quotes)
 
 - [x] Horizontal rules (thematic breaks)  
-  https://spec.commonmark.org/0.31.2/#thematic-breaks
+  [Spec] (https://spec.commonmark.org/0.31.2/#thematic-breaks)
 
 ### Code
 - [x] Inline code  
-  https://spec.commonmark.org/0.31.2/#code-spans
+  [Spec] (https://spec.commonmark.org/0.31.2/#code-spans)
 
 - [x] Fenced code blocks  
-  https://spec.commonmark.org/0.31.2/#fenced-code-blocks
+  [Spec] (https://spec.commonmark.org/0.31.2/#fenced-code-blocks)
 
 ### Lists
 - [x] Bullet lists  
-  https://spec.commonmark.org/0.31.2/#bullet-lists
+  [Spec] (https://spec.commonmark.org/0.31.2/#bullet-lists)
 
 - [x] Ordered lists  
-  https://spec.commonmark.org/0.31.2/#ordered-lists
+  [Spec] (https://spec.commonmark.org/0.31.2/#ordered-lists)
 
 ### Links & Media
 - [x] Inline links  
-  https://spec.commonmark.org/0.31.2/#links
+  [Spec] (https://spec.commonmark.org/0.31.2/#links)
 
 - [x] Images  
-  https://spec.commonmark.org/0.31.2/#images
+  [Spec] (https://spec.commonmark.org/0.31.2/#images)
 
 ### HTML & Escaping
 - [ ] Inline HTML  
-  https://spec.commonmark.org/0.31.2/#raw-html
+  [Spec] (https://spec.commonmark.org/0.31.2/#raw-html)
 
 - [ ] HTML blocks  
-  https://spec.commonmark.org/0.31.2/#html-blocks
+  [Spec] (https://spec.commonmark.org/0.31.2/#html-blocks)
 
 - [ ] Backslash escapes  
-  https://spec.commonmark.org/0.31.2/#backslash-escapes
+  [Spec] (https://spec.commonmark.org/0.31.2/#backslash-escapes)
 
 ---
 
 ## GitHub Flavored Markdown (GFM)
 
 - [x] Tables  
-  https://github.github.com/gfm/#tables-extension
+  [Spec] (https://github.github.com/gfm/#tables-extension)
 
 - [x] Strikethrough  
-  https://github.github.com/gfm/#strikethrough-extension
+  [Spec] (https://github.github.com/gfm/#strikethrough-extension)
 
 - [x] Task list items  
-  https://github.github.com/gfm/#task-list-items-extension
+  [Spec] (https://github.github.com/gfm/#task-list-items-extension)
 
 - [ ] Autolinks  
-  https://github.github.com/gfm/#autolinks-extension
+  [Spec] (https://github.github.com/gfm/#autolinks-extension)
 
 ---
 
