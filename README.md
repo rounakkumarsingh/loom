@@ -51,8 +51,7 @@ flowchart LR
         F[🌐 HTML String]
     end
     
-    A --> B
-    B --> C
+    A --> B    B --> C
     C --> D
     D --> E
     E --> F
@@ -60,6 +59,9 @@ flowchart LR
     style A fill:#f9f,stroke:#333,stroke-width:2px
     style F fill:#9f9,stroke:#333,stroke-width:2px
 ```
+
+See **[ARCHITECTURE.md](ARCHITECTURE.md)** for a detailed explanation of Loom’s parsing pipeline and internal design.
+
 
 ### Pipeline Breakdown
 
