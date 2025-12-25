@@ -134,7 +134,7 @@ This is the same paragraph on a new line
         )  # Empty quote lines        
         self.assertEqual(
             block_to_block_type("   > Quote"), BlockType.QUOTE
-        )  # Up to 3 leading spaces allowed -- added by samsahu2007
+        )  # Up to 3 leading spaces allowed -- added by  
 
         # Test against the wrong cases
         self.assertEqual(
@@ -145,7 +145,7 @@ This is the same paragraph on a new line
         )
         self.assertEqual(
             block_to_block_type("     > Quote"), BlockType.PARAGRAPH
-        )  # More than 3 leading spaces not allowed -- added by samsahu2007 
+        )  # More than 3 leading spaces not allowed -- added by   
 
     def test_block_to_block_type_unordered_list(self):
 

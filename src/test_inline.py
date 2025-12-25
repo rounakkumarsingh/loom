@@ -455,28 +455,28 @@ class TestTextToTextNodes(unittest.TestCase):
     def test_only_italic_with_no_flanking_whitespace(self):
         """Checks for flanking whitespace before '_' for rendering italic font. 
         Otherwise commonmark spec specifies it as plain text"""
-        # test added by samsahu2007
+           
         text = "my_variable_name"
         nodes = text_to_textnodes(text)
         self.assertListEqual([TextNode("my_variable_name", TextType.PLAIN)], nodes)
 
     def test_only_italic_with_asterik(self):
         """Text with single asterik before and after is also treated as italics"""
-        # test added by samsahu2007
+           
         text="*italic word*"
         nodes = text_to_textnodes(text)
         self.assertListEqual([TextNode("italic word", TextType.ITALIC)], nodes)
 
     def test_mismatched_delimiters_no_emphasis(self):
         """Mismatched delimiters don't create italics"""
-        # test added by samsahu2007
+           
         text = "*italics_"
         with self.assertRaises(ValueError):
             text_to_textnodes(text)
 
     def test_escaped_italics(self):
         """Backslash escapes italics markers"""
-        # test added by samsahu2007
+           
         text = r"This is \*not italized\*"
         # The 'r' before "This is \*not emphasized\*" tells python that the backslash '\'
         # is not an escape sequence
@@ -491,7 +491,7 @@ class TestTextToTextNodes(unittest.TestCase):
 
     def test_code_span_with_backtick_inside(self):
         """Code span containing backtick uses double backticks"""
-        # test added by samsahu2007
+           
         text = "Use ``code with ` backtick``"
         nodes = text_to_textnodes(text)
         self.assertEqual(nodes[1].node_type, TextType.CODE)
@@ -506,7 +506,7 @@ class TestTextToTextNodes(unittest.TestCase):
 
     def test_link_with_empty_url(self):
         """Links can have empty URLs"""
-        # test added by samsahu2007
+           
         text = "[link]()"
         nodes = text_to_textnodes(text)
         self.assertEqual(nodes[0].node_type, TextType.LINK)
@@ -514,7 +514,7 @@ class TestTextToTextNodes(unittest.TestCase):
 
     def test_link_with_parentheses_in_url(self):
         """URLs can contain balanced parentheses"""
-        # test added by samsahu2007
+           
         text = "[link](url(with)parens)"
         nodes = text_to_textnodes(text)
         self.assertEqual(nodes[0].url, "url(with)parens")

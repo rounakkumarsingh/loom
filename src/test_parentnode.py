@@ -4,6 +4,13 @@ from parentnode import ParentNode
 from leafnode import LeafNode
 
 class TestParentNode(unittest.TestCase):
+
+    def test_parent_node_inherits_from_htmlnode(self):
+        """ParentNode should inherit from HTMLNode"""
+        from htmlnode import HTMLNode
+        node = ParentNode("div", [LeafNode("p", "text")])
+        self.assertIsInstance(node, HTMLNode)
+
     def test_to_html_with_children(self):
         child_node = LeafNode("span", "child")
         parent_node = ParentNode("div", [child_node])
@@ -76,6 +83,46 @@ class TestParentNode(unittest.TestCase):
         node = ParentNode("div", None)
         with self.assertRaises(ValueError):
             node.to_html()
+
+    def test_to_html_mixed_children(self):
+        """Parent with both leaf and parent children"""
+        children = [
+            LeafNode("h1", "Title"),
+            LeafNode("p", "Intro"),
+            ParentNode("ul", [
+                LeafNode("li", "Item 1"),
+                LeafNode("li", "Item 2")
+            ]),
+            LeafNode("p", "Conclusion")
+        ]
+        parent = ParentNode("div", children)
+        html = parent.to_html()
+        self.assertIn("<h1>Title</h1>", html)
+        self.assertIn("<ul>", html)
+        self.assertIn("<li>Item 1</li>", html)
+
+    def test_table_structure(self):
+        """Table structure"""
+        node = ParentNode("table", [
+            ParentNode("tr", [
+                LeafNode("td", "Cell 1"),
+                LeafNode("td", "Cell 2")
+            ]),
+            ParentNode("tr", [
+                LeafNode("td", "Cell 3"),
+                LeafNode("td", "Cell 4")
+            ])
+        ])
+        html = node.to_html()
+        self.assertIn("<table>", html)
+        self.assertIn("<tr>", html)
+        self.assertIn("<td>Cell 1</td>", html)
+
+    def test_props_with_class(self):
+        """Props with class attribute"""
+        node = ParentNode("div", [LeafNode("p", "Text")], {"class": "container"})
+        html = node.to_html()
+        self.assertIn('class="container"', html)
 
 if __name__ == "__main__":
     unittest.main()

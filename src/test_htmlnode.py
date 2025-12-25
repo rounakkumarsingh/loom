@@ -14,6 +14,31 @@ class TestHTMLNode(unittest.TestCase):
         node = HTMLNode(props={"href": "https://www.boot.dev"})
         self.assertEqual(node.props_to_html(), ' href="https://www.boot.dev"')
 
+    def test_props_with_quotes_in_value(self):
+        """Props with quotes in values"""
+        node = HTMLNode(props={"title": 'Say "hello"'})
+        self.assertEqual(node.props_to_html(), ' title="Say "hello""')
+
+    def test_props_with_empty_string_value(self):
+        """Props can have empty string values"""
+        node = HTMLNode(props={"alt": ""})
+        self.assertEqual(node.props_to_html(), ' alt=""')
+
+    def test_props_with_numeric_value(self):
+        """Props with numeric values are converted to strings"""
+        node = HTMLNode(props={"width": "100", "height": "200"})
+        result = node.props_to_html()
+        self.assertIn('width="100"', result)
+        self.assertIn('height="200"', result)
+
+    def test_props_with_style_attribute(self):
+        """Props with CSS style attribute"""
+        node = HTMLNode(props={"style": "color: red; background: blue; margin: 10px;"})
+        self.assertEqual(
+            node.props_to_html(),
+            ' style="color: red; background: blue; margin: 10px;"'
+        )
+
     def test_props_to_html_with_no_props(self):
         node = HTMLNode()
         self.assertEqual(node.props_to_html(), "")
