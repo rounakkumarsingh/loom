@@ -467,7 +467,7 @@ class TestTextToTextNodes(unittest.TestCase):
         nodes = text_to_textnodes(text)
         self.assertListEqual([TextNode("italic word", TextType.ITALIC)], nodes)
 
-    def test_mismatched_delimiters_no_emphasis(self):
+    def test_mismatched_delimiters_no_italics(self):
         """Mismatched delimiters don't create italics"""
            
         text = "*italics_"

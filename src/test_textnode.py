@@ -80,7 +80,6 @@ class TestTextNodeToHTML(unittest.TestCase):
         self.assertIsInstance(html_node, LeafNode)
         self.assertEqual(html_node.tag, "a")
         self.assertEqual(html_node.value, "This is a link node without url")
-        #self.assertEqual(html_node.props, {"href": ""})
         with self.assertRaises(ValueError):
             html_node.props
         # Empty links are not rendered as links in commonmark spec

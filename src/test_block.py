@@ -213,6 +213,8 @@ This is the same paragraph on a new line
         )  # Mixed list types
 
     def test_block_to_block_type_paragraph(self):
+
+        # Test the normal cases
         self.assertEqual(
             block_to_block_type("This is a normal paragraph."), BlockType.PARAGRAPH
         )
@@ -221,6 +223,8 @@ This is the same paragraph on a new line
             BlockType.PARAGRAPH,
         )
         self.assertEqual(block_to_block_type("Just some text."), BlockType.PARAGRAPH)
+
+        # Test the valid but unconventional cases(i.e. edge cases)
         self.assertEqual(
             block_to_block_type("A line with # but not a heading"), BlockType.PARAGRAPH
         )
