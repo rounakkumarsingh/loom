@@ -81,6 +81,9 @@ def text_to_textnodes(text: str) -> list[TextNode]:
     nodes: List[TextNode] = [TextNode(text, TextType.PLAIN)]
     nodes = split_nodes_delimiter(nodes, "**", TextType.BOLD)
     nodes = split_nodes_delimiter(nodes, "_", TextType.ITALIC)
+    # '_' works for italic only when it is flanked by whitespace
+    # or punctuation mark (e.g. this is _italic_ word)
+    # But "this is_italic_word does not"
     nodes = split_nodes_delimiter(nodes, "`", TextType.CODE)
     nodes = split_nodes_image(nodes)
     nodes = split_nodes_link(nodes)

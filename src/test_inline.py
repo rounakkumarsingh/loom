@@ -452,10 +452,50 @@ class TestTextToTextNodes(unittest.TestCase):
         nodes = text_to_textnodes(text)
         self.assertListEqual([TextNode("This is italic", TextType.ITALIC)], nodes)
 
+    def test_only_italic_with_no_flanking_whitespace(self):
+        """Checks for flanking whitespace before '_' for rendering italic font. 
+        Otherwise commonmark spec specifies it as plain text"""
+           
+        text = "my_variable_name"
+        nodes = text_to_textnodes(text)
+        self.assertListEqual([TextNode("my_variable_name", TextType.PLAIN)], nodes)
+
+    def test_only_italic_with_asterisk(self):
+        """Text with single asterisk before and after is also treated as italics"""
+           
+        text="*italic word*"
+        nodes = text_to_textnodes(text)
+        self.assertListEqual([TextNode("italic word", TextType.ITALIC)], nodes)
+
+    def test_mismatched_delimiters_no_italics(self):
+        """Mismatched delimiters don't create italics"""
+           
+        text = "*italics_"
+        with self.assertRaises(ValueError):
+            text_to_textnodes(text)
+
+    def test_backslash_escapes_italics(self):
+        """Backslash escapes italics markers"""
+           
+        text = r"This is \*not italicized\*"
+        # The 'r' before "This is \*not emphasized\*" tells python that the backslash '\'
+        # is not an escape sequence
+        nodes = text_to_textnodes(text)
+        self.assertListEqual([TextNode("This is *not italicized*", TextType.PLAIN)], nodes)
+        # Should remain plain with literal asterisks
+
     def test_only_code(self):
         text = "`This is code`"
         nodes = text_to_textnodes(text)
         self.assertListEqual([TextNode("This is code", TextType.CODE)], nodes)
+
+    def test_code_span_with_backtick_inside(self):
+        """Code span containing backtick uses double backticks"""
+           
+        text = "Use ``code with ` backtick``"
+        nodes = text_to_textnodes(text)
+        self.assertEqual(nodes[1].node_type, TextType.CODE)
+        self.assertEqual(nodes[1].text, "code with ` backtick")
 
     def test_only_link(self):
         text = "[a link](https://example.com)"
@@ -464,6 +504,21 @@ class TestTextToTextNodes(unittest.TestCase):
             [TextNode("a link", TextType.LINK, "https://example.com")], nodes
         )
 
+    def test_link_with_empty_url(self):
+        """Links can have empty URLs"""
+           
+        text = "[link]()"
+        nodes = text_to_textnodes(text)
+        self.assertEqual(nodes[0].node_type, TextType.LINK)
+        self.assertEqual(nodes[0].url, "")
+
+    def test_link_with_parentheses_in_url(self):
+        """URLs can contain balanced parentheses"""
+           
+        text = "[link](url(with)parens)"
+        nodes = text_to_textnodes(text)
+        self.assertEqual(nodes[0].url, "url(with)parens")
+
     def test_only_image(self):
         text = "![an image](https://example.com/img.png)"
         nodes = text_to_textnodes(text)
@@ -471,6 +526,13 @@ class TestTextToTextNodes(unittest.TestCase):
             [TextNode("an image", TextType.IMAGE, "https://example.com/img.png")],
             nodes,
         )
+
+    def test_image_with_empty_alt(self):
+        """Images can have empty alt text"""
+        text = "![](image.png)"
+        nodes = text_to_textnodes(text)
+        self.assertEqual(nodes[0].node_type, TextType.IMAGE)
+        self.assertEqual(nodes[0].text, "")
 
     def test_invalid_markdown(self):
         text = "This has **unclosed bold"
