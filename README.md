@@ -51,7 +51,8 @@ flowchart LR
         F[🌐 HTML String]
     end
     
-    A --> B    B --> C
+    A --> B
+    B --> C
     C --> D
     D --> E
     E --> F
