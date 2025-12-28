@@ -61,6 +61,9 @@ flowchart LR
     style F fill:#9f9,stroke:#333,stroke-width:2px
 ```
 
+See **[ARCHITECTURE.md](ARCHITECTURE.md)** for a detailed explanation of Loom’s parsing pipeline and internal design.
+
+
 ### Pipeline Breakdown
 
 | Stage | File | Description |
