@@ -35,6 +35,15 @@ def get_table(md):
 class TestTableParsing(unittest.TestCase):
 
     def test_simple_pipe_table(self):
+        """Test parsing of a basic pipe table structure.
+        
+        Verifies that:
+        - Header row is parsed into <thead> element
+        - Body rows are parsed into <tbody> element
+        - Cell content is extracted correctly
+        - Delimiter row (dashes) is not included in output
+        - Table structure matches expected HTML format
+        """
         md = """
 | Header A | Header B |
 |----------|----------|
@@ -55,6 +64,14 @@ class TestTableParsing(unittest.TestCase):
         )
 
     def test_table_with_left_alignment(self):
+        """Test that left-aligned columns don't add alignment attributes.
+        
+        Verifies that:
+        - Left alignment syntax (:---) is recognized
+        - No align attribute is added for left alignment (default)
+        - Header cells don't have spurious align properties
+        - Left is the implicit default alignment in HTML
+        """
         md = """
 | Header A | Header B |
 |:---------|:---------|
@@ -68,6 +85,14 @@ class TestTableParsing(unittest.TestCase):
             self.assertNotIn("align", th.props or {})
 
     def test_table_with_right_alignment(self):
+        """Test right-aligned columns with align attribute.
+        
+        Verifies that:
+        - Right alignment syntax (---:) is recognized
+        - align="right" attribute is added to all cells in column
+        - Both header and body cells receive alignment
+        - Alignment is applied consistently throughout the column
+        """
         md = """
 | Header A | Header B |
 |---------:|---------:|
@@ -82,6 +107,14 @@ class TestTableParsing(unittest.TestCase):
                     self.assertEqual(cell.props.get("align"), "right")
 
     def test_table_with_center_alignment(self):
+        """Test center-aligned columns with align attribute.
+        
+        Verifies that:
+        - Center alignment syntax (:---:) is recognized
+        - align="center" attribute is added to all cells in column
+        - Both header and body cells receive alignment
+        - Colons on both sides indicate centering
+        """
         md = """
 | Header A | Header B |
 |:--------:|:--------:|
@@ -96,6 +129,14 @@ class TestTableParsing(unittest.TestCase):
                     self.assertEqual(cell.props.get("align"), "center")
 
     def test_table_with_mixed_alignment(self):
+        """Test table with different alignment per column.
+        
+        Verifies that:
+        - Each column can have independent alignment
+        - Left (default), center (:---:), and right (---:) mix correctly
+        - Alignment is applied per-column, not per-cell
+        - Body cells inherit their column's alignment
+        """
         md = """
 | Left | Center | Right |
 |:-----|:------:|------:|
@@ -109,6 +150,15 @@ class TestTableParsing(unittest.TestCase):
         self.assertEqual(aligns, [None, "center", "right"])
 
     def test_table_with_varying_separator_lengths(self):
+        """Test that separator dash count doesn't affect parsing.
+        
+        Verifies that:
+        - Short separators (---) work
+        - Long separators (-----) work
+        - Varying lengths in same table are acceptable
+        - Only the presence and position of colons matter
+        - Minimum 3 dashes is typically required
+        """
         md = """
 |  A  |   B   |  C  |
 |:--- |:-----:|----:|
@@ -121,6 +171,14 @@ class TestTableParsing(unittest.TestCase):
         self.assertEqual(aligns, [None, "center", "right"])
         
     def test_table_alignment_with_empty_cells(self):
+        """Test that alignment applies even to empty cells.
+        
+        Verifies that:
+        - Empty cells still receive align attributes
+        - Alignment is determined by column, not content
+        - Empty string content is distinguished from missing cells
+        - Props are set even when cell has no visible content
+        """
         md = """
 | Header A | Header B |
 |:--------:|---------:|
@@ -137,6 +195,14 @@ class TestTableParsing(unittest.TestCase):
         self.assertEqual(tds[1].props.get("align"), "right")
 
     def test_header_only_table(self):
+        """Test table with headers but no body rows.
+        
+        Verifies that:
+        - Tables with only header+delimiter are valid
+        - <thead> element is created
+        - No <tbody> element is generated
+        - Useful for template tables or empty datasets
+        """
         md = """
 | Header A | Header B | Header C |
 |----------|:--------:|---------:|
@@ -146,6 +212,14 @@ class TestTableParsing(unittest.TestCase):
         self.assertFalse(any(c.tag == "tbody" for c in element_children(table)))
 
     def test_table_with_fewer_body_cells(self):
+        """Test automatic padding when rows have fewer cells than headers.
+        
+        Verifies that:
+        - Missing cells are filled with empty strings
+        - Row length matches header count
+        - Padding happens on the right side
+        - Table structure remains rectangular
+        """
         md = """
 | Header A | Header B | Header C |
 |----------|----------|----------|
@@ -163,6 +237,14 @@ class TestTableParsing(unittest.TestCase):
         )
 
     def test_table_with_more_body_cells(self):
+        """Test truncation when rows have more cells than headers.
+        
+        Verifies that:
+        - Extra cells beyond header count are ignored
+        - Row length is capped at header count
+        - Truncation happens on the right side
+        - Table structure remains consistent
+        """
         md = """
 | Header A | Header B |
 |----------|----------|
@@ -179,6 +261,14 @@ class TestTableParsing(unittest.TestCase):
         )
 
     def test_table_mismatched_cells_with_alignment(self):
+        """Test that alignment works correctly with mismatched cell counts.
+        
+        Verifies that:
+        - Padding cells receive proper alignment attributes
+        - Truncated cells don't affect remaining alignments
+        - Each column's alignment is preserved
+        - Alignment and padding/truncation work together
+        """
         md = """
 | Left | Center | Right |
 |:-----|:------:|------:|
@@ -201,7 +291,14 @@ class TestTableParsing(unittest.TestCase):
         )
 
     def test_header_row_delimiter_row_mismatch(self):
-        """The header row must match the delimiter row in the number of cells. If not, a table will not be recognized"""
+        """Test that header/delimiter cell count mismatch prevents table recognition.
+        
+        Verifies that:
+        - Header must have same cell count as delimiter
+        - Mismatched counts cause block to be treated as paragraph
+        - Tables require structural consistency
+        - This is a strict validation rule
+        """
         md = """
 |  A  |  B  |
 | --- |
@@ -210,7 +307,15 @@ class TestTableParsing(unittest.TestCase):
         self.assertEqual(block_to_block_type(md), BlockType.PARAGRAPH)
 
     def test_escape_pipe_using_backtick(self):
-        """Include a pipe in a cell's content by escaping it, including inside other inline spans"""
+        """Test that pipes can be escaped within backticks.
+        
+        Verifies that:
+        - Pipes inside backticks don't split cells
+        - Backslash-pipe (\\|) is treated as literal pipe character
+        - Inline code spans can contain pipe characters
+        - Escaping works within other inline formatting
+        - Cell contains text + code + text structure
+        """
         md = """
 |  A  |
 | --- |

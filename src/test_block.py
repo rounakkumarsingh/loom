@@ -6,6 +6,13 @@ class TestBlockFunctions(unittest.TestCase):
     # Existing tests for markdown_to_blocks
 
     def test_markdown_to_blocks(self):
+        """Test basic block splitting functionality.
+        
+        Verifies that:
+        - Multiple blocks separated by blank lines are correctly identified
+        - Content within blocks is preserved including newlines
+        - Markdown formatting within blocks is not processed
+        """
         md = """
 This is **bolded** paragraph
 
@@ -26,6 +33,13 @@ This is the same paragraph on a new line
         )
 
     def test_markdown_to_blocks_newlines(self):
+        """Test handling of multiple consecutive newlines.
+        
+        Verifies that:
+        - Multiple blank lines (2+) are treated as block separators
+        - Leading and trailing newlines are ignored
+        - Block content is preserved regardless of surrounding whitespace
+        """
         md = """
 
 This is **bolded** paragraph
@@ -50,6 +64,14 @@ This is the same paragraph on a new line
         )
 
     def test_markdown_to_blocks_mixed_line_endings(self):
+        """Test cross-platform line ending compatibility.
+        
+        Verifies that:
+        - CRLF (\\r\\n) line endings are handled correctly
+        - LF (\\n) line endings are handled correctly
+        - Mixed line endings in the same document work properly
+        - Block separation works regardless of line ending type
+        """
         md = (
             "This is **bolded** paragraph\r\n\r\n"
             "This is another paragraph with _italic_ text and `code` here\n"
@@ -71,21 +93,46 @@ This is the same paragraph on a new line
         )
 
     def test_single_block(self):
+        """Test document with no block separators.
+        
+        Verifies that:
+        - A single block without blank lines returns one block
+        - The content is preserved exactly as written
+        """
         md = "This is just one block."
         blocks = markdown_to_blocks(md)
         self.assertEqual(blocks, ["This is just one block."])
 
     def test_strip_whitespace(self):
+        """Test whitespace trimming behavior.
+        
+        Verifies that:
+        - Leading whitespace is stripped from blocks
+        - Trailing whitespace is stripped from blocks
+        - Internal whitespace within blocks is preserved
+        """        
         md = "  \n\n  block1  \n\n  block2  \n\n"
         blocks = markdown_to_blocks(md)
         self.assertEqual(blocks, ["block1", "block2"])
 
     def test_empty_input(self):
+        """Test handling of empty input string.
+        
+        Verifies that:
+        - Empty string input returns an empty list
+        - No errors are raised on empty input
+        """
         md = ""
         blocks = markdown_to_blocks(md)
         self.assertEqual(blocks, [])
 
     def test_only_whitespace(self):
+        """Test handling of whitespace-only input.
+        
+        Verifies that:
+        - Input containing only spaces and newlines returns empty list
+        - Various whitespace characters are handled correctly
+        """
         md = "   \n\n   \n "
         blocks = markdown_to_blocks(md)
         self.assertEqual(blocks, [])
@@ -93,6 +140,16 @@ This is the same paragraph on a new line
     # New tests for block_to_block_type
 
     def test_block_to_block_type_heading(self):
+        """Test heading detection with edge cases.
+        
+        Verifies that:
+        - All heading levels (h1-h6) are recognized
+        - Headings with 0-3 leading spaces are recognized
+        - Headings with > 3 leading spaces are treated as paragraphs
+        - Closing # marks are optional
+        - Space after # is required
+        - More than 6 # marks are not valid headings
+        """        
         self.assertEqual(block_to_block_type("# Heading 1"), BlockType.HEADING)
         self.assertEqual(block_to_block_type("## Heading 2"), BlockType.HEADING)
         self.assertEqual(block_to_block_type("### Heading 3"), BlockType.HEADING)
@@ -121,6 +178,16 @@ This is the same paragraph on a new line
         )  # Not a valid heading pattern
 
     def test_block_to_block_type_code(self):
+        """Test code block detection with edge cases.
+        
+        Verifies that:
+        - Code blocks with triple backticks are recognized
+        - Language specifiers after backticks are allowed
+        - Empty code blocks are valid
+        - Whitespace around backticks is permitted
+        - Both opening and closing backticks are required
+        - Content between backticks can contain any characters
+        """
         self.assertEqual(block_to_block_type("```code\nblock\n```"), BlockType.CODE)
         self.assertEqual(
             block_to_block_type("```\nprint('hello')\n```"), BlockType.CODE
@@ -138,7 +205,16 @@ This is the same paragraph on a new line
         self.assertEqual(block_to_block_type("```code block"), BlockType.PARAGRAPH)
 
     def test_block_to_block_type_quote(self):
-
+        """Test quote block detection with edge cases.
+        
+        Verifies that:
+        - Single-line quotes with > are recognized
+        - Multi-line quotes where every line starts with > are recognized
+        - Quotes with 0-3 leading spaces before > are valid
+        - Quotes with > 3 leading spaces are treated as paragraphs
+        - Empty quote lines (just >) are valid
+        - All lines must start with > to be a quote block
+        """
         # Test the normal cases
         self.assertEqual(block_to_block_type("> This is a quote"), BlockType.QUOTE)
         self.assertEqual(block_to_block_type("> Line 1\n> Line 2"), BlockType.QUOTE)
@@ -169,7 +245,16 @@ This is the same paragraph on a new line
         )  # More than 3 leading spaces not allowed -- added by   
 
     def test_block_to_block_type_unordered_list(self):
-
+        """Test unordered list detection with edge cases.
+        
+        Verifies that:
+        - Single-line lists with - prefix are recognized
+        - Multi-line lists where every line starts with - are recognized
+        - Space after - is required
+        - Empty list items (just -) are valid
+        - All lines must start with - to be an unordered list
+        - Inconsistent prefixes across lines break list detection
+        """
         # Test the normal cases
         self.assertEqual(
             block_to_block_type("- Item 1\n- Item 2"), BlockType.UNORDERED_LIST
@@ -201,7 +286,17 @@ This is the same paragraph on a new line
         )  # Missing space between '-' and Item
 
     def test_block_to_block_type_ordered_list(self):
-
+        """Test ordered list detection with edge cases.
+        
+        Verifies that:
+        - Lists with number followed by . and space are recognized
+        - Multi-line lists where every line follows pattern are recognized
+        - Numbers don't need to be sequential
+        - Starting number doesn't need to be 1
+        - Numbers can be repeated
+        - Space after . is required
+        - All lines must match pattern to be an ordered list
+        """
         # Test the normal cases
         self.assertEqual(
             block_to_block_type("1. Item 1\n2. Item 2"), BlockType.ORDERED_LIST
@@ -234,7 +329,16 @@ This is the same paragraph on a new line
         )  # Mixed list types
 
     def test_block_to_block_type_paragraph(self):
-
+        """Test paragraph detection as fallback type.
+        
+        Verifies that:
+        - Plain text without special formatting is recognized as paragraph
+        - Multi-line text without markers is a paragraph
+        - Text containing special characters but not matching patterns is paragraph
+        - Empty strings default to paragraph type
+        - Whitespace-only strings are paragraphs
+        - Invalid formatting attempts fall back to paragraph
+        """
         # Test the normal cases
         self.assertEqual(
             block_to_block_type("This is a normal paragraph."), BlockType.PARAGRAPH
@@ -267,6 +371,14 @@ This is the same paragraph on a new line
         )  # Whitespace only string
 
     def test_paragraphs(self):
+        """Test conversion of markdown paragraphs to HTML.
+        
+        Verifies that:
+        - Multiple paragraphs are wrapped in separate <p> tags
+        - Inline formatting within paragraphs is processed
+        - Line breaks within blocks don't create new paragraphs
+        - All paragraphs are wrapped in a parent <div>
+        """
         md = """
 This is **bolded** paragraph
 text in a p
@@ -284,6 +396,14 @@ This is another paragraph with _italic_ text and `code` here
         )
 
     def test_codeblock(self):
+        """Test that code blocks preserve content without processing.
+        
+        Verifies that:
+        - Content in code blocks is not processed for inline markdown
+        - Markdown syntax characters are preserved literally
+        - Code blocks are wrapped in <pre><code> tags
+        - Line breaks within code blocks are preserved
+        """
         md = """
 ```
 This is text that _should_ remain
