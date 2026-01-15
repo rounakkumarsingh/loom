@@ -1,4 +1,3 @@
-
 import unittest
 
 from textnode import (
@@ -7,7 +6,7 @@ from textnode import (
     text_node_to_html_node,
 )
 from leafnode import LeafNode
-
+from parentnode import ParentNode
 
 class TestTextNode(unittest.TestCase):
     def test_eq(self):
@@ -94,6 +93,45 @@ class TestTextNodeToHTML(unittest.TestCase):
         self.assertEqual(
             html_node.props,
             {"src": "https://www.boot.dev/image.png", "alt": "alt text for image"},
+        )
+
+    def test_nested(self):
+        # MarkDown: "_a **b `c` d** e_"
+        node = TextNode(
+            "",
+            TextType.ITALIC,
+            children=[
+                TextNode("a ", TextType.PLAIN),
+                TextNode(
+                    "",
+                    TextType.BOLD,
+                    children=[
+                        TextNode("b ", TextType.PLAIN),
+                        TextNode("c", TextType.CODE),
+                        TextNode(" d", TextType.PLAIN),
+                    ],
+                ),
+                TextNode(" e", TextType.PLAIN),
+            ],
+        )
+        html_node = text_node_to_html_node(node)
+        self.assertIsInstance(html_node, ParentNode)
+        self.assertEqual(html_node.tag, "i")
+        self.assertEqual(html_node.value, None)
+        self.assertListEqual(
+            html_node.children,
+            [
+                LeafNode(None, "a "),
+                ParentNode(
+                    "b",
+                    children=[
+                        LeafNode(None, "b "),
+                        LeafNode("code", "c"),
+                        LeafNode(None, " d"),
+                    ],
+                ),
+                LeafNode(None, " e"),
+            ],
         )
 
 

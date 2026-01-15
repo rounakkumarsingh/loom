@@ -51,6 +51,29 @@ class TestParentNode(unittest.TestCase):
             "<div><ul><li><b>item 1</b></li><li><i>item 2</i></li></ul></div>"
         )
 
+    def test_double_nested_(self):
+        # Markdown: "_a **b `c` d** e_"
+        html_node = ParentNode(
+            "i",
+            children=[
+                LeafNode(None, "a "),
+                ParentNode(
+                    "b",
+                    children=[
+                        LeafNode(None, "b "),
+                        LeafNode("code", "c"),
+                        LeafNode(None, " d"),
+                    ],
+                ),
+                LeafNode(None, " e"),
+            ],
+        )
+
+        self.assertEqual(
+            html_node.to_html(),
+            "<i>a <b>b <code>c</code> d</b> e</i>",
+        )
+
     def test_to_html_with_props(self):
         node = ParentNode(
             "div",

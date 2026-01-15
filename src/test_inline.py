@@ -8,6 +8,7 @@ from inline import (
     split_nodes_image,
     split_nodes_link,
     text_to_textnodes,
+    parse_inline_with_stack,
 )
 
 
@@ -500,6 +501,101 @@ class TestTextToTextNodes(unittest.TestCase):
             ],
             nodes,
         )
+
+    def test_italic_with_nested_bold(self):
+        text = "start _This **is** italic_ end"
+        nodes = text_to_textnodes(text)
+
+        self.assertListEqual(
+            [
+                TextNode("start ", TextType.PLAIN),
+                TextNode(
+                    "",
+                    TextType.ITALIC,
+                    children=[
+                        TextNode("This ", TextType.PLAIN),
+                        TextNode("is", TextType.BOLD),
+                        TextNode(" italic", TextType.PLAIN),
+                    ],
+                ),
+                TextNode(" end", TextType.PLAIN),
+            ],
+            nodes,
+        )
+
+    def test_bold_with_nested_italic(self):
+        text = "**bold _italic_ text**"
+        nodes = text_to_textnodes(text)
+
+        self.assertListEqual(
+            [
+                TextNode(
+                    "",
+                    TextType.BOLD,
+                    children=[
+                        TextNode("bold ", TextType.PLAIN),
+                        TextNode("italic", TextType.ITALIC),
+                        TextNode(" text", TextType.PLAIN),
+                    ],
+                )
+            ],
+            nodes,
+        )
+
+    def test_double_nested(self):
+        text = "_a **b `c` d** e_"
+        nodes = text_to_textnodes(text)
+
+        self.assertListEqual(
+            [
+                TextNode(
+                    "",
+                    TextType.ITALIC,
+                    children=[
+                        TextNode("a ", TextType.PLAIN),
+                        TextNode(
+                            "",
+                            TextType.BOLD,
+                            children=[
+                                TextNode("b ", TextType.PLAIN),
+                                TextNode("c", TextType.CODE),
+                                TextNode(" d", TextType.PLAIN),
+                            ],
+                        ),
+                        TextNode(" e", TextType.PLAIN),
+                    ],
+                )
+            ],
+            nodes,
+        )
+
+    def test_nested_mixed_all(self):
+        nodes = text_to_textnodes("hi **bold `code` ![img](url) [link](site)** end")
+
+        self.assertListEqual(
+            [
+                TextNode("hi ", TextType.PLAIN),
+                TextNode(
+                    "",
+                    TextType.BOLD,
+                    children=[
+                        TextNode("bold ", TextType.PLAIN),
+                        TextNode("code", TextType.CODE),
+                        TextNode(" ", TextType.PLAIN),
+                        TextNode("img", TextType.IMAGE, "url"),
+                        TextNode(" ", TextType.PLAIN),
+                        TextNode("link", TextType.LINK, "site"),
+                    ],
+                ),
+                TextNode(" end", TextType.PLAIN),
+            ],
+            nodes,
+        )
+
+    def test_unclosed_nested(self):
+        text = "_italic **bold_"
+        with self.assertRaises(ValueError):
+            text_to_textnodes(text)
 
 
 if __name__ == "__main__":

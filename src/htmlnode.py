@@ -15,6 +15,17 @@ class HTMLNode:
         self.children: List[HTMLNode] | None = children
         self.props: Dict[str, str] | None = props
 
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, HTMLNode):
+            return NotImplemented
+
+        return (
+            self.tag == other.tag
+            and self.value == other.value
+            and self.children == other.children
+            and self.props == other.props
+        )
+    
     def to_html(self) -> str:
         raise NotImplementedError("To be impletemented by subclasses")
 
