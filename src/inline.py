@@ -39,6 +39,11 @@ def collapse_single_child_nodes(nodes: List[TextNode]) -> None:
 
         if len(node.children) == 1:
             only_child = node.children[0]
+            
+            if only_child.children: 
+                collapse_single_child_nodes(node.children)
+                continue
+            
             if node.text == "":
                 nodes[i] = TextNode(
                     only_child.text,
@@ -120,9 +125,6 @@ def parse_inline_with_stack(
         parsed_nodes.extend(root.children)
 
     return parsed_nodes
-
-    # print(ParentNode("div", [text_node_to_html_node(node) for node in newnodes]).to_html())
-    return newnodes
 
 
 def extract_markdown_images(text: str) -> List[Tuple[str, str]]:
