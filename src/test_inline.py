@@ -569,6 +569,29 @@ class TestTextToTextNodes(unittest.TestCase):
             nodes,
         )
 
+    def test_double_nested_grandchild(self):
+        text = "_**`c`**_"
+        nodes = text_to_textnodes(text)
+
+        self.assertListEqual(
+            [
+                TextNode(
+                    "",
+                    TextType.ITALIC,
+                    children=[
+                        TextNode(
+                            "",
+                            TextType.BOLD,
+                            children=[
+                                TextNode("c", TextType.CODE),
+                            ],
+                        ),
+                    ],
+                )
+            ],
+            nodes,
+        )
+
     def test_nested_mixed_all(self):
         nodes = text_to_textnodes("hi **bold `code` ![img](url) [link](site)** end")
 
