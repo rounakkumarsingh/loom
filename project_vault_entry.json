@@ -1,0 +1,22 @@
+{
+  "id": "loom_static_site_generator",
+  "title": "Loom",
+  "tagline": "Zero-dependency Python static site generator that transforms Markdown into HTML via custom parsers.",
+  "github_url": "https://github.com/rounakkumarsingh/loom",
+  "tech_stack": ["Python 3.12", "Regex", "Bash"],
+  "concepts": ["static site generation", "markdown parsing", "abstract syntax trees", "regex-based parsing", "recursive traversal", "file system operations"],
+  "bullets": [
+    "Converted Markdown content trees into HTML outputs by recursively walking the content directory, applying template placeholders, and rewriting href/src basepaths during page generation.",
+    "Classified block elements via regular expressions to distinguish headings, fenced code blocks, blockquotes, ordered and unordered lists, tables, and paragraphs before rendering.",
+    "Parsed GitHub-flavored table blocks by splitting pipe-delimited rows, inferring column alignment tokens, and emitting thead/tbody structures with align attributes on th and td nodes.",
+    "Built a stack-driven inline parser that matches bold, italic, and code delimiters, supports nested child TextNodes, and raises errors on unmatched markers.",
+    "Extracted inline images and links using targeted regular expressions, splitting surrounding text into typed TextNodes that carry href or src metadata.",
+    "Mapped typed TextNodes into HTML leaf and parent nodes to render bold, italic, code, anchor, and image elements while preserving nested inline structure.",
+    "Rendered block-level HTML elements such as headings, paragraphs, blockquotes, lists, code blocks, and tables under a root div to form the final document tree.",
+    "Copied static assets and cleaned prior docs output before site generation, enabling one-command builds through python src/main.py or the build.sh wrapper."
+  ],
+  "architecture": "The entrypoint in main.py cleans the docs directory, copies static assets, and recursively generates HTML pages from Markdown files while honoring an optional basepath. Markdown is split into block types (headings, lists, code fences, blockquotes, tables, paragraphs) before inline parsing builds a TextNode tree via delimiter matching, link/image extraction, and nesting. TextNodes convert to HTML parent and leaf nodes that render tags such as h1–h6, p, ul/ol, blockquote, pre/code, and table, which are injected into template.html with title and content placeholders. Output files mirror the content directory structure inside docs for static hosting.",
+  "complexity": "medium",
+  "created_at": "2026-01-16",
+  "last_updated": "2026-02-17"
+}
